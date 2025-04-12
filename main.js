@@ -4,41 +4,62 @@ var ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth - 100;
 canvas.height = window.innerHeight - 100;
 
-var img2 = new Image();
-img2.src = "./dino.png";
+var dinoImage = new Image();
+dinoImage.src = "./Assets/dino_basic.png";
 
 var dino = {
   x: 10,
-  y: 200,
-  width: 50,
-  height: 50,
+  y: 320,
+  width: 64,
+  height: 64,
   draw() {
     ctx.fillStyle = "green";
     // ctx.fillRect(this.x, this.y, this.width, this.height);
-    ctx.drawImage(img2, this.x, this.y, this.width, this.height);
+    ctx.drawImage(dinoImage, this.x, this.y, this.width, this.height);
   },
 };
 
-var img1 = new Image();
-img1.src = "./cactus_small.png";
+var cactusImage = new Image();
+cactusImage.src = "./Assets/cactus_1.png";
 
 class Cactus {
   constructor() {
     this.x = 500;
-    this.y = 200;
-    this.width = 50;
-    this.height = 50;
+    this.y = 320;
+    this.width = 64;
+    this.height = 64;
   }
 
   draw() {
     ctx.fillStyle = "red";
     // ctx.fillRect(this.x, this.y, this.width, this.height);
-    ctx.drawImage(img1, this.x, this.y, this.width, this.height);
+    ctx.drawImage(cactusImage, this.x, this.y, this.width, this.height);
   }
 }
 
+var birdImage = new Image();
+birdImage.src = "./Assets/bird_up.png";
+
+class Bird {
+  constructor() {
+    this.x = 500;
+    this.y = 64;
+    this.width = 64;
+    this.height = 64;
+  }
+
+  draw() {
+    ctx.fillStyle = "blue";
+    ctx.drawImage(birdImage, this.x, this.y, this.width, this.height);
+  }
+}
+
+// 화질 개선
+ctx.imageSmoothingEnabled = false;
+
 var timer = 0;
 var cactus여러개 = [];
+var birdList = [];
 var 점프timer = 0;
 var animation;
 
@@ -48,11 +69,28 @@ function 프레임마다실행할거() {
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  if (timer % 200 === 0) {
+  // 새 생성
+  if (timer % 270 === 0) {
+    var bird = new Bird();
+    birdList.push(bird);
+  }
+  // 새들 관리
+  birdList.forEach((bird, i, o) => {
+    if (bird.x < 0) {
+      o.splice(i, 1);
+    }
+
+    bird.x--;
+    bird.draw();
+  });
+
+  // 선인장 생성
+  if (timer % 320 === 0) {
     var cactus = new Cactus();
     cactus여러개.push(cactus);
   }
 
+  // 선인장들 관리
   cactus여러개.forEach((cactus, i, o) => {
     if (cactus.x < 0) {
       o.splice(i, 1);
@@ -66,12 +104,12 @@ function 프레임마다실행할거() {
 
   // 점프 기능
   if (점프중 == true) {
-    dino.y--;
+    dino.y -= 1.5;
     점프timer++;
   }
   if (점프중 == false) {
-    if (dino.y < 200) {
-      dino.y++;
+    if (dino.y < 320) {
+      dino.y += 1.5;
     }
   }
   if (점프timer > 100) {
