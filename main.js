@@ -138,7 +138,7 @@ document.addEventListener("keydown", function (e) {
   }
 });
 
-document.addEventListener("mousedown", function (e) {
+document.addEventListener("pointerdown", function (e) {
   if (e.button === 0) {
     점프중 = true;
   }
