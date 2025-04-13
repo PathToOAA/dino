@@ -1,49 +1,89 @@
 import { canvas, ctx } from "./canvas.js";
 import { dino, Cactus, Bird } from "./object.js";
 
-const timer = 0; // 기본 타이머
+const TARGET_FPS = 60;
+const FRAME_TIME = 1000 / TARGET_FPS;
+
+let lastTime = performance.now();
+let accumulater = 0;
+
 const cactusContainer = []; // Cactus 객체를 담을 배열
 const birdContainer = []; // Bird 객체를 담을 배열
-const jumpTimer = 0; // 점프 타이머
+let jumpTimer = 0; // 점프 타이머
 let animation = null;
+let 점프중 = false;
 
-// 프레임마다 실행되는 함수
+let frameCount = 0;
+// 프레임당 1번 실행되는 함수
 function update() {
-  animation = requestAnimationFrame(update);
-  timer++;
+  // 게임 상태 갱신
 
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  frameCount++;
 
-  // 새 생성
-  if (timer % 270 === 0) {
-    const bird = new Bird();
-    birdContainer.push(bird);
-  }
-  // 새들 관리
-  birdContainer.forEach((bird, i, o) => {
-    if (bird.x < 0) {
-      o.splice(i, 1);
-    }
+  // dino
 
-    bird.x--;
-    bird.draw();
-  });
+  // cactus ================================================
 
-  // 선인장 생성
-  if (timer % 320 === 0) {
+  // 생성
+  if (frameCount % 150 === 0) {
     const cactus = new Cactus();
     cactusContainer.push(cactus);
   }
 
-  // 선인장들 관리
+  // 소멸, 충돌 처리, 이동
   cactusContainer.forEach((cactus, i, o) => {
     if (cactus.x < 0) {
       o.splice(i, 1);
     }
-
     onCollision(dino, cactus);
+    cactus.x -= 2;
+  });
 
-    cactus.x--;
+  // bird ==================================================
+
+  // 생성
+  if (frameCount % 120 === 0) {
+    const bird = new Bird();
+    birdContainer.push(bird);
+  }
+
+  // 소멸, 충돌 처리, 이동
+  birdContainer.forEach((bird, i, o) => {
+    if (bird.x < 0) {
+      o.splice(i, 1);
+    }
+    onCollision(dino, bird);
+    bird.x -= 2;
+  });
+
+  // =======================================================
+}
+
+// 프레임마다 실행되는 함수
+function gameLoop(currentTime) {
+  // currentTime: 내부적으로 perfarmance.now()와 동일한 타임스탬프
+  animation = requestAnimationFrame(gameLoop);
+  let deltaTime = currentTime - lastTime;
+  lastTime = currentTime;
+  accumulater += deltaTime;
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  console.log("accumulater: " + accumulater);
+  console.log("deltaTime: " + deltaTime);
+  // 프레임 타임에 맞춰 업데이트
+  while (accumulater >= FRAME_TIME) {
+    update();
+    accumulater -= FRAME_TIME;
+  }
+
+  // 새들 그리기
+  birdContainer.forEach((bird, i, o) => {
+    bird.draw();
+  });
+
+  // 선인장들 그리기
+  cactusContainer.forEach((cactus, i, o) => {
     cactus.draw();
   });
 
@@ -62,25 +102,46 @@ function update() {
     jumpTimer = 0;
   }
 
+  // dino 그리기
   dino.draw();
+
+  // hitbox 표시
+  // dino.drawHitBox();
+  // cactusContainer.forEach((cactus) => {
+  //   cactus.drawHitBox();
+  // });
+  // birdContainer.forEach((bird) => {
+  //   bird.drawHitBox();
+  // });
 }
 
-update();
+gameLoop(lastTime);
 
 // 충돌 확인
-function onCollision(dino, cactus) {
-  const x축차이 = cactus.x - (dino.x + dino.width);
-  const y축차이 = cactus.y - (dino.y + dino.height);
-  if (x축차이 < 0 && y축차이 < 0) {
-    // ctx.clearRect(0, 0, canvas.width, canvas.height);
+function onCollision(dino, enemy) {
+  let x축중첩 = false;
+  if (dino.x < enemy.x + enemy.width && dino.x + dino.width > enemy.x) {
+    x축중첩 = true;
+  }
+  let y축중첩 = false;
+  if (dino.y < enemy.y + enemy.height && dino.y + dino.height > enemy.y) {
+    y축중첩 = true;
+  }
+  if (x축중첩 && y축중첩) {
+    console.log("충돌 객체: ", enemy);
     cancelAnimationFrame(animation);
   }
 }
 
 // 점프 이벤트 핸들러
-const 점프중 = false;
 document.addEventListener("keydown", function (e) {
   if (e.code === "Space") {
+    점프중 = true;
+  }
+});
+
+document.addEventListener("mousedown", function (e) {
+  if (e.button === 0) {
     점프중 = true;
   }
 });

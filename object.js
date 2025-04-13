@@ -10,8 +10,11 @@ export const dino = {
   height: 64,
   draw() {
     ctx.fillStyle = "green";
-    // ctx.fillRect(this.x, this.y, this.width, this.height);
     ctx.drawImage(dinoImage, this.x, this.y, this.width, this.height);
+  },
+  drawHitBox() {
+    ctx.strokeStyle = "red";
+    ctx.strokeRect(this.x, this.y, this.width, this.height);
   },
 };
 
@@ -28,8 +31,12 @@ export class Cactus {
 
   draw() {
     ctx.fillStyle = "red";
-    // ctx.fillRect(this.x, this.y, this.width, this.height);
     ctx.drawImage(cactusImage, this.x, this.y, this.width, this.height);
+  }
+
+  drawHitBox() {
+    ctx.strokeStyle = "red";
+    ctx.strokeRect(this.x, this.y, this.width, this.height);
   }
 }
 
@@ -47,5 +54,10 @@ export class Bird {
   draw() {
     ctx.fillStyle = "blue";
     ctx.drawImage(birdImage, this.x, this.y, this.width, this.height);
+  }
+
+  drawHitBox() {
+    ctx.strokeStyle = "red";
+    ctx.strokeRect(this.x, this.y, this.width, this.height);
   }
 }
