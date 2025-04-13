@@ -36,7 +36,7 @@ function update() {
       o.splice(i, 1);
     }
     onCollision(dino, cactus);
-    cactus.x -= 2;
+    cactus.x -= 3;
   });
 
   // bird ==================================================
@@ -69,8 +69,6 @@ function gameLoop(currentTime) {
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  console.log("accumulater: " + accumulater);
-  console.log("deltaTime: " + deltaTime);
   // 프레임 타임에 맞춰 업데이트
   while (accumulater >= FRAME_TIME) {
     update();
