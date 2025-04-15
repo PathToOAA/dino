@@ -11,7 +11,6 @@ const cactusContainer = []; // Cactus 객체를 담을 배열
 const birdContainer = []; // Bird 객체를 담을 배열
 let jumpTimer = 0; // 점프 타이머
 let animation = null;
-let 점프중 = false;
 
 let frameCount = 0;
 // 프레임당 1번 실행되는 함수
@@ -59,7 +58,7 @@ function update() {
   // =======================================================
 }
 
-// 프레임마다 실행되는 함수
+// 프레임 타임보다 자주 실행되는 함수
 function gameLoop(currentTime) {
   // currentTime: 내부적으로 perfarmance.now()와 동일한 타임스탬프
   animation = requestAnimationFrame(gameLoop);
@@ -76,28 +75,25 @@ function gameLoop(currentTime) {
   }
 
   // 새들 그리기
-  birdContainer.forEach((bird, i, o) => {
+  birdContainer.forEach((bird) => {
     bird.draw();
   });
 
   // 선인장들 그리기
-  cactusContainer.forEach((cactus, i, o) => {
+  cactusContainer.forEach((cactus) => {
     cactus.draw();
   });
 
   // 점프 기능
-  if (점프중 == true) {
-    dino.y -= 1.5;
-    jumpTimer++;
-  }
-  if (점프중 == false) {
-    if (dino.y < 320) {
-      dino.y += 1.5;
+  if (dino.isJumping == true) {
+    dino.y -= dino.y_velocity;
+    dino.y_velocity -= 0.12;
+
+    if (dino.y >= 320) {
+      dino.y = 320;
+      dino.y_velocity = 0;
+      dino.isJumping = false;
     }
-  }
-  if (jumpTimer > 100) {
-    점프중 = false;
-    jumpTimer = 0;
   }
 
   // dino 그리기
@@ -133,13 +129,15 @@ function onCollision(dino, enemy) {
 
 // 점프 이벤트 핸들러
 document.addEventListener("keydown", function (e) {
-  if (e.code === "Space") {
-    점프중 = true;
+  if (e.code === "Space" && dino.isJumping == false) {
+    dino.isJumping = true;
+    dino.y_velocity = 6;
   }
 });
 
 document.addEventListener("pointerdown", function (e) {
-  if (e.button === 0) {
-    점프중 = true;
+  if (e.button === 0 && dino.isJumping == false) {
+    dino.isJumping = true;
+    dino.y_velocity = 6;
   }
 });

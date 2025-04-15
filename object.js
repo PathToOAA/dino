@@ -8,6 +8,8 @@ export const dino = {
   y: 320,
   width: 64,
   height: 64,
+  y_velocity: 0,
+  isJumping: false,
   draw() {
     ctx.fillStyle = "green";
     ctx.drawImage(dinoImage, this.x, this.y, this.width, this.height);
