@@ -1,5 +1,5 @@
 import { canvas, ctx } from "./canvas.js";
-import { dino, Cactus, Bird } from "./object.js";
+import { dino, Cactus, Bird } from "./model.js";
 
 const TARGET_FPS = 60;
 const FRAME_TIME = 1000 / TARGET_FPS;
@@ -19,7 +19,19 @@ function update() {
 
   frameCount++;
 
-  // dino
+  // dino==================================================
+
+  // 점프 기능
+  if (dino.isJumping == true) {
+    dino.y -= dino.y_velocity;
+    dino.y_velocity -= 0.12;
+
+    if (dino.y >= 320) {
+      dino.y = 320;
+      dino.y_velocity = 0;
+      dino.isJumping = false;
+    }
+  }
 
   // cactus ================================================
 
@@ -83,18 +95,6 @@ function gameLoop(currentTime) {
   cactusContainer.forEach((cactus) => {
     cactus.draw();
   });
-
-  // 점프 기능
-  if (dino.isJumping == true) {
-    dino.y -= dino.y_velocity;
-    dino.y_velocity -= 0.12;
-
-    if (dino.y >= 320) {
-      dino.y = 320;
-      dino.y_velocity = 0;
-      dino.isJumping = false;
-    }
-  }
 
   // dino 그리기
   dino.draw();
