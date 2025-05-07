@@ -1,11 +1,25 @@
-import { ctx } from "./canvas.js";
+import { ctx, GROUND, WIDTH } from "./canvas.js";
+import { loadImage } from "./utils.js";
 
-const dinoImage = new Image();
-dinoImage.src = "./Assets/dino_basic.png";
+export let dinoImage, cactusImage, birdImage, restartButtonImage;
 
+export async function loadAssets() {
+  [dinoImage, cactusImage, birdImage, restartButtonImage] = await Promise.all([
+    loadImage("./Assets/dino_basic.png"),
+    loadImage("./Assets/cactus_1.png"),
+    loadImage("./Assets/bird_up.png"),
+    loadImage("./Assets/restart.png"),
+  ]);
+}
+
+export const gameState = {
+  isGameActive: false,
+};
+
+// game objects
 export const dino = {
   x: 10,
-  y: 320,
+  y: GROUND,
   width: 64,
   height: 64,
   y_velocity: 0,
@@ -13,6 +27,7 @@ export const dino = {
   draw() {
     ctx.fillStyle = "green";
     ctx.drawImage(dinoImage, this.x, this.y, this.width, this.height);
+    console.log("dino draw");
   },
   drawHitBox() {
     ctx.strokeStyle = "red";
@@ -20,13 +35,10 @@ export const dino = {
   },
 };
 
-const cactusImage = new Image();
-cactusImage.src = "./Assets/cactus_1.png";
-
 export class Cactus {
   constructor() {
-    this.x = 500;
-    this.y = 320;
+    this.x = WIDTH;
+    this.y = GROUND;
     this.width = 64;
     this.height = 64;
   }
@@ -42,12 +54,9 @@ export class Cactus {
   }
 }
 
-const birdImage = new Image();
-birdImage.src = "./Assets/bird_up.png";
-
 export class Bird {
   constructor() {
-    this.x = 500;
+    this.x = WIDTH;
     this.y = 64;
     this.width = 64;
     this.height = 64;
@@ -63,3 +72,22 @@ export class Bird {
     ctx.strokeRect(this.x, this.y, this.width, this.height);
   }
 }
+
+// UI elements
+export const restartButton = {
+  x: WIDTH / 2 - 16,
+  y: GROUND - 128,
+  width: 32,
+  height: 28,
+  draw() {
+    ctx.drawImage(restartButtonImage, this.x, this.y, this.width, this.height);
+  },
+  isInside(x, y) {
+    return (
+      x >= this.x &&
+      x <= this.x + this.width &&
+      y >= this.y &&
+      y <= this.y + this.height
+    );
+  },
+};
